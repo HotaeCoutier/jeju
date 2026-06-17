@@ -14,8 +14,9 @@
         body {
             font-family: 'Noto Sans KR', 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
+            overflow: hidden; /* 시스템 기본 스크롤 제거하여 앱 느낌 극대화 */
         }
-        /* Hide scrollbars for a clean app feel */
+        /* 스크롤바 숨김 처리 */
         ::-webkit-scrollbar {
             display: none;
         }
@@ -26,12 +27,12 @@
 </head>
 <body class="bg-slate-50 text-slate-800 flex justify-center min-h-screen">
 
-    <!-- Mobile Container (Max-w-md looks like a native phone app on desktop too) -->
-    <div class="w-full max-w-md bg-white min-h-screen flex flex-col shadow-2xl relative overflow-hidden pb-20">
+    <!-- Mobile Container (모바일 화면 비율 및 독립 스크롤 구현을 위해 h-screen 설정) -->
+    <div class="w-full max-w-md bg-white h-screen flex flex-col shadow-2xl relative overflow-hidden">
         
-        <!-- Header -->
-        <header class="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-5 pt-6 pb-5 rounded-b-[2rem] shadow-md sticky top-0 z-40">
-            <div class="flex justify-between items-center mb-2">
+        <!-- Header (상단 헤더 고정 영역) -->
+        <header class="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-5 pt-5 pb-5 rounded-b-[2rem] shadow-md shrink-0 z-40">
+            <div class="flex justify-between items-center mb-1">
                 <div class="flex items-center gap-2">
                     <span class="text-2xl">🌴</span>
                     <h1 class="text-xl font-bold tracking-tight">비와 걷는 제주</h1>
@@ -40,11 +41,11 @@
                     D-Day Family Trip
                 </div>
             </div>
-            <p class="text-teal-50 text-xs font-light">7월 17일(금) ~ 7월 20일(월) | 3박 4일 가족 여정</p>
+            <p class="text-teal-50 text-[11px] font-light">7월 17일(금) ~ 7월 20일(월) | 3박 4일 가족 여정</p>
         </header>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 overflow-y-auto px-4 py-5" id="main-content">
+        <!-- Main Content Area (헤더와 푸터 사이에서만 단독 스크롤링) -->
+        <main class="flex-1 overflow-y-auto px-4 py-4" id="main-content">
             
             <!-- ================= TAB 1: WEATHER & HOME ================= -->
             <div id="tab-weather" class="tab-content space-y-5">
@@ -70,7 +71,7 @@
                             <span class="w-2 h-5 bg-teal-500 rounded-full inline-block"></span>
                             실시간 제주 지역별 날씨
                         </h2>
-                        <p class="text-xs text-slate-400 mt-0.5">비 소식에 따라 일정을 유연하게 대처하세요!</p>
+                        <p class="text-xs text-slate-400 mt-0.5">지역 카드를 터치하면 향후 6시간의 예보를 확인해요!</p>
                     </div>
                     <button onclick="fetchJejuWeather()" class="bg-teal-50 hover:bg-teal-100 active:scale-95 transition-all text-teal-600 p-2.5 rounded-full shadow-sm flex items-center justify-center">
                         <i id="refresh-icon" class="fa-solid fa-arrows-rotate text-sm"></i>
@@ -79,13 +80,13 @@
 
                 <!-- Weather Cards Grid -->
                 <div class="grid grid-cols-2 gap-3" id="weather-grid">
-                    <!-- Loading Skeleton (Will be replaced by dynamic data) -->
-                    <div class="bg-white p-4 rounded-2xl border border-slate-100 animate-pulse flex flex-col justify-between h-32">
+                    <!-- Loading Skeleton -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 animate-pulse flex flex-col justify-between h-36">
                         <div class="h-4 bg-slate-200 rounded w-1/2"></div>
                         <div class="h-8 bg-slate-200 rounded w-3/4 my-2"></div>
                         <div class="h-3 bg-slate-200 rounded w-2/3"></div>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl border border-slate-100 animate-pulse flex flex-col justify-between h-32">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 animate-pulse flex flex-col justify-between h-36">
                         <div class="h-4 bg-slate-200 rounded w-1/2"></div>
                         <div class="h-8 bg-slate-200 rounded w-3/4 my-2"></div>
                         <div class="h-3 bg-slate-200 rounded w-2/3"></div>
@@ -119,7 +120,7 @@
 
             <!-- ================= TAB 2: ITINERARY ================= -->
             <div id="tab-itinerary" class="tab-content hidden space-y-4">
-                <div class="flex justify-between items-center mb-2">
+                <div class="flex justify-between items-center mb-1">
                     <div>
                         <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                             <span class="w-2 h-5 bg-teal-500 rounded-full inline-block"></span>
@@ -141,20 +142,20 @@
                     </label>
                 </div>
 
-                <!-- Days Switcher Buttons -->
-                <div class="flex bg-slate-100 p-1 rounded-xl gap-1 sticky top-16 z-30 shadow-sm">
+                <!-- Days Switcher Buttons (Sticky 고정 적용) -->
+                <div class="flex bg-slate-100 p-1 rounded-xl gap-1 sticky top-0 bg-white/95 backdrop-blur-md py-2.5 z-30 shadow-sm border-b border-slate-100">
                     <button onclick="showDay(1)" id="day1-btn" class="day-tab-btn flex-1 py-2 text-center text-xs font-bold rounded-lg bg-white text-teal-600 shadow-sm transition-all">7/17(금)</button>
                     <button onclick="showDay(2)" id="day2-btn" class="day-tab-btn flex-1 py-2 text-center text-xs font-bold rounded-lg text-slate-500 hover:bg-slate-50 transition-all">7/18(토)</button>
                     <button onclick="showDay(3)" id="day3-btn" class="day-tab-btn flex-1 py-2 text-center text-xs font-bold rounded-lg text-slate-500 hover:bg-slate-50 transition-all">7/19(일)</button>
                     <button onclick="showDay(4)" id="day4-btn" class="day-tab-btn flex-1 py-2 text-center text-xs font-bold rounded-lg text-slate-500 hover:bg-slate-50 transition-all">7/20(월)</button>
                 </div>
 
-                <div id="itinerary-details" class="space-y-4">
+                <div id="itinerary-details" class="space-y-4 pt-1">
                     <!-- Day schedules are dynamically populated in JS -->
                 </div>
             </div>
 
-            <!-- ================= TAB 3: FOOD & CAFE (NEW) ================= -->
+            <!-- ================= TAB 3: FOOD & CAFE ================= -->
             <div id="tab-food" class="tab-content hidden space-y-4">
                 <div>
                     <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -164,17 +165,17 @@
                     <p class="text-xs text-slate-400 mt-0.5">지역별 엄선된 찐맛집과 인기 감성 카페 리스트입니다.</p>
                 </div>
 
-                <!-- Region Selector for Restaurants -->
-                <div class="flex bg-slate-100 p-1 rounded-xl gap-1 overflow-x-auto whitespace-nowrap sticky top-16 z-30 shadow-sm">
-                    <button onclick="filterFoodRegion('all')" id="food-all-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-bold rounded-lg bg-white text-teal-600 shadow-sm transition-all">전체</button>
-                    <button onclick="filterFoodRegion('jeju')" id="food-jeju-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">제주시(북)</button>
-                    <button onclick="filterFoodRegion('seogwipo')" id="food-seogwipo-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">서귀포(남)</button>
-                    <button onclick="filterFoodRegion('seongsan')" id="food-seongsan-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">성산/동부</button>
-                    <button onclick="filterFoodRegion('aewol')" id="food-aewol-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">애월/서부</button>
+                <!-- Region Selector for Restaurants (Sticky 고정 적용) -->
+                <div class="flex bg-slate-100 p-1 rounded-xl gap-1 overflow-x-auto whitespace-nowrap sticky top-0 bg-white/95 backdrop-blur-md py-2.5 z-30 shadow-sm border-b border-slate-100">
+                    <button onclick="filterFoodRegion('all')" id="food-all-btn" class="food-region-btn flex-shrink-0 px-3.5 py-2 text-center text-xs font-bold rounded-lg bg-white text-teal-600 shadow-sm transition-all">전체보기</button>
+                    <button onclick="filterFoodRegion('jeju')" id="food-jeju-btn" class="food-region-btn flex-shrink-0 px-3.5 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">제주시 (북부)</button>
+                    <button onclick="filterFoodRegion('seogwipo')" id="food-seogwipo-btn" class="food-region-btn flex-shrink-0 px-3.5 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">서귀포 (남부)</button>
+                    <button onclick="filterFoodRegion('seongsan')" id="food-seongsan-btn" class="food-region-btn flex-shrink-0 px-3.5 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">성산 / 동부</button>
+                    <button onclick="filterFoodRegion('aewol')" id="food-aewol-btn" class="food-region-btn flex-shrink-0 px-3.5 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">애월 / 서부</button>
                 </div>
 
                 <!-- Restaurants Grid Content -->
-                <div id="food-list-container" class="space-y-3.5">
+                <div id="food-list-container" class="space-y-3.5 pt-1">
                     <!-- Loaded dynamically via JavaScript -->
                 </div>
             </div>
@@ -190,7 +191,7 @@
                 </div>
 
                 <!-- Chat Display Box -->
-                <div class="border border-slate-100 bg-slate-50 rounded-2xl p-4 min-h-[250px] max-h-[350px] overflow-y-auto space-y-3 text-xs" id="chat-box">
+                <div class="border border-slate-100 bg-slate-50 rounded-2xl p-4 min-h-[250px] max-h-[320px] overflow-y-auto space-y-3 text-xs" id="chat-box">
                     <div class="flex gap-2.5 items-start">
                         <div class="w-7 h-7 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-[10px]">AI</div>
                         <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 max-w-[80%] leading-relaxed">
@@ -244,29 +245,57 @@
 
         </main>
 
-        <!-- Bottom Navigation Tabs Bar -->
-        <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 flex justify-around py-2.5 safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40">
-            <button onclick="switchTab('tab-weather')" id="nav-tab-weather" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-teal-500">
+        <!-- Bottom Navigation Tabs Bar (고정된 레이아웃 보장 - shrink-0 safe-bottom) -->
+        <nav class="shrink-0 bg-white border-t border-slate-100 flex justify-around py-3 safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40">
+            <button onclick="switchTab('tab-weather')" id="nav-tab-weather" class="nav-btn flex flex-col items-center gap-1 flex-1 text-teal-500">
                 <i class="fa-solid fa-cloud-sun text-base"></i>
                 <span class="text-[9px] font-bold">홈 & 날씨</span>
             </button>
-            <button onclick="switchTab('tab-itinerary')" id="nav-tab-itinerary" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-slate-400">
+            <button onclick="switchTab('tab-itinerary')" id="nav-tab-itinerary" class="nav-btn flex flex-col items-center gap-1 flex-1 text-slate-400">
                 <i class="fa-regular fa-calendar-days text-base"></i>
                 <span class="text-[9px] font-semibold">일정표</span>
             </button>
-            <button onclick="switchTab('tab-food')" id="nav-tab-food" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-slate-400">
+            <button onclick="switchTab('tab-food')" id="nav-tab-food" class="nav-btn flex flex-col items-center gap-1 flex-1 text-slate-400">
                 <i class="fa-solid fa-utensils text-base"></i>
                 <span class="text-[9px] font-semibold">맛집·카페</span>
             </button>
-            <button onclick="switchTab('tab-ai')" id="nav-tab-ai" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-slate-400">
+            <button onclick="switchTab('tab-ai')" id="nav-tab-ai" class="nav-btn flex flex-col items-center gap-1 flex-1 text-slate-400">
                 <i class="fa-solid fa-wand-magic-sparkles text-base"></i>
                 <span class="text-[9px] font-semibold">AI 가이드</span>
             </button>
-            <button onclick="switchTab('tab-checklist')" id="nav-tab-checklist" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-slate-400">
+            <button onclick="switchTab('tab-checklist')" id="nav-tab-checklist" class="nav-btn flex flex-col items-center gap-1 flex-1 text-slate-400">
                 <i class="fa-solid fa-list-check text-base"></i>
                 <span class="text-[9px] font-semibold">준비물</span>
             </button>
         </nav>
+
+        <!-- Slide-Up Bottom Sheet for Hourly Weather (시간별 비예측 시트) -->
+        <div id="weather-sheet" class="absolute inset-x-0 bottom-0 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.15)] z-50 transform translate-y-full transition-transform duration-300 ease-out flex flex-col max-h-[70%]">
+            <!-- 드래그/닫기 핸들러 -->
+            <div class="w-full flex justify-center py-4 cursor-pointer" onclick="closeWeatherSheet()">
+                <div class="w-12 h-1.5 bg-slate-200 rounded-full"></div>
+            </div>
+            
+            <div class="px-6 pb-6 overflow-y-auto flex-1 space-y-4">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span id="sheet-region-desc" class="text-[10px] bg-teal-50 text-teal-600 font-bold px-2 py-0.5 rounded">제주시 (북부)</span>
+                        <h3 id="sheet-region-name" class="text-lg font-black text-slate-800 mt-1">실시간 강수 분석 및 예측</h3>
+                    </div>
+                    <button onclick="closeWeatherSheet()" class="text-slate-400 hover:text-slate-600 p-2 bg-slate-100 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- 6시간 날씨 라인업 콘테이너 -->
+                <div class="space-y-3" id="hourly-forecast-list">
+                    <!-- JS에 의해 실시간 동적 생성됨 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Sheet Backdrop -->
+        <div id="sheet-backdrop" class="absolute inset-0 bg-slate-900/40 z-40 hidden transition-opacity duration-300 opacity-0" onclick="closeWeatherSheet()"></div>
 
         <!-- Toast Notification Panel -->
         <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md text-white text-xs px-4 py-3 rounded-xl shadow-lg opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
@@ -282,6 +311,7 @@
         let currentDayTab = 1;
         let isRainMode = false; // Toggle to alternative course if raining
         let currentFoodFilter = 'all';
+        let weatherCache = {}; // 각 지역별 강수확률 예보 데이터를 캐시 보관
 
         // Weather Coordinates for Major Areas of Jeju
         const regions = [
@@ -294,16 +324,15 @@
 
         // Custom Checklist Items to persist state
         const defaultChecklist = [
-            { id: 'chk_1', text: '렌트카 예약 확인서 및 면허증', category: '필수 서류' },
-            { id: 'chk_2', text: '보조배터리 및 스마트폰 충전기', category: '필수 서류' },
+            { id: 'chk_1', text: '신분증 또는 면허증', category: '필수' },
+            { id: 'chk_2', text: '보조배터리 및 스마트폰 충전기', category: '필수' },
             { id: 'chk_3', text: '우산 / 우비 (갑작스러운 소나기 대비)', category: '날씨 대비' },
             { id: 'chk_4', text: '여분의 슬리퍼/샌들 (해변용)', category: '날씨 대비' },
-            { id: 'chk_5', text: '가족 상비약 (멀미약, 소화제, 대일밴드)', category: '가족 케어' },
-            { id: 'chk_6', text: '자외선 차단 선크림 및 캡 모자', category: '가족 케어' },
-            { id: 'chk_7', text: '모기 기피제 및 바르는 모기약', category: '가족 케어' }
+            { id: 'chk_5', text: '상비약 (멀미약, 소화제, 대일밴드)', category: '가족 케어' },
+            { id: 'chk_6', text: '자외선 차단 선크림 및 캡 모자', category: '가족 케어' }
         ];
 
-        // Curated Jeju Restaurants & Cafes Database (10 items per region = 40 items total)
+        // Curated Jeju Restaurants & Cafes Database
         const foodDatabase = [
             // JEJU CITY (10)
             { name: "우진해장국", region: "jeju", type: "식사", menu: "고사리육개장, 몸국", desc: "제주 향토음식의 원조. 고사리를 고기처럼 푹 고아 죽처럼 구수하고 진한 이색 해장국.", tips: "부모님 대만족! 아침 대기시간이 매우 기니 포장 또는 이른 아침 방문 추천.", stars: 5, tag: "부모님 추천" },
@@ -386,9 +415,14 @@
             try {
                 const weatherPromises = regions.map(async (region) => {
                     try {
-                        const url = `https://api.open-meteo.com/v1/forecast?latitude=${region.lat}&longitude=${region.lon}&current_weather=true&timezone=Asia/Seoul`;
+                        // 시간별 강수 예보(hourly) 및 실시간 날씨 데이터 동시 요청
+                        const url = `https://api.open-meteo.com/v1/forecast?latitude=${region.lat}&longitude=${region.lon}&current_weather=true&hourly=temperature_2m,precipitation_probability,weathercode&timezone=Asia/Seoul`;
                         const res = await fetch(url);
                         const data = await res.json();
+                        
+                        // 지역별 날씨 세부 캐시 보관 (터치 시 바텀시트에서 조회용)
+                        weatherCache[region.id] = data;
+
                         return {
                             ...region,
                             temp: data.current_weather.temperature,
@@ -396,12 +430,14 @@
                             wind: data.current_weather.windspeed
                         };
                     } catch (e) {
-                        // Fallback/Mock data if fetch fails
+                        // 네트워크 오류 시 더미 데이터 폴백 및 캐시 구성
+                        const dummyData = generateDummyWeatherData(region);
+                        weatherCache[region.id] = dummyData;
                         return {
                             ...region,
-                            temp: 24.5 + Math.random() * 3,
-                            code: [0, 2, 3, 61, 80][Math.floor(Math.random() * 5)],
-                            wind: 5.4
+                            temp: dummyData.current_weather.temperature,
+                            code: dummyData.current_weather.weathercode,
+                            wind: dummyData.current_weather.windspeed
                         };
                     }
                 });
@@ -413,7 +449,9 @@
                     const isRainy = [51, 53, 55, 61, 63, 65, 80, 81, 95].includes(item.code);
 
                     const card = document.createElement('div');
-                    card.className = `p-4 rounded-2xl border ${info.cardBg} transition-all hover:scale-[1.01] flex flex-col justify-between h-36 shadow-sm`;
+                    // 클릭 제스처 피드백 클래스 추가 및 터치 이벤트 바인딩
+                    card.className = `p-4 rounded-2xl border ${info.cardBg} transition-all active:scale-95 cursor-pointer flex flex-col justify-between h-36 shadow-sm relative overflow-hidden`;
+                    card.onclick = () => showHourlyForecastSheet(item.id, item.name, item.desc);
                     card.innerHTML = `
                         <div class="flex justify-between items-start">
                             <div>
@@ -422,25 +460,151 @@
                             </div>
                             <span class="text-2xl">${info.emoji}</span>
                         </div>
-                        <div class="my-1.5 flex items-baseline gap-1">
+                        <div class="my-1 flex items-baseline gap-1">
                             <span class="text-2xl font-black text-slate-800">${Math.round(item.temp)}°C</span>
-                            <span class="text-[10px] text-slate-400">풍속 ${item.wind}m/s</span>
+                            <span class="text-[9px] text-slate-400">풍속 ${item.wind}m/s</span>
                         </div>
-                        <div class="flex justify-between items-center bg-white/60 p-1 rounded-xl text-[10px] font-bold">
-                            <span class="text-slate-500 pl-1">${info.text}</span>
-                            <span class="px-2 py-0.5 rounded-lg text-[9px] ${isRainy ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}">
-                                ${info.activity}
+                        <div class="flex justify-between items-center bg-white/75 p-1 rounded-xl text-[10px] font-bold">
+                            <span class="text-slate-600 pl-1">${info.text}</span>
+                            <span class="px-2 py-0.5 rounded-lg text-[9px] ${isRainy ? 'bg-indigo-100 text-indigo-700 animate-pulse' : 'bg-emerald-100 text-emerald-700'}">
+                                ${isRainy ? '🌧️ 실내로!' : '☀️ 외출 OK'}
                             </span>
+                        </div>
+                        <!-- 터치 유도 마커 -->
+                        <div class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-300 pointer-events-none">
+                            <i class="fa-solid fa-chevron-right"></i>
                         </div>
                     `;
                     gridContainer.appendChild(card);
                 });
-                showToast("실시간 날씨 정보를 성공적으로 업데이트했습니다.");
+                showToast("실시간 날씨 정보 및 시간별 예보를 갱신했습니다.");
             } catch (err) {
                 showToast("날씨 데이터 연동에 오류가 발생했습니다.");
             } finally {
                 setTimeout(() => refreshIcon.classList.remove('animate-spin'), 600);
             }
+        }
+
+        // 폴백용 기상 더미 데이터 생성기
+        function generateDummyWeatherData(region) {
+            const timeArr = [];
+            const tempArr = [];
+            const probArr = [];
+            const codeArr = [];
+            const currentHour = new Date().getHours();
+            
+            for (let i = 0; i < 24; i++) {
+                const hourStr = String((currentHour + i) % 24).padStart(2, '0');
+                timeArr.push(`2026-07-17T${hourStr}:00`);
+                tempArr.push(22 + Math.floor(Math.sin(i / 3) * 4) + Math.random() * 2);
+                probArr.push(Math.floor(Math.random() * 100));
+                codeArr.push([0, 2, 3, 61, 80][Math.floor(Math.random() * 5)]);
+            }
+
+            return {
+                current_weather: {
+                    temperature: 24.5 + Math.random() * 3,
+                    weathercode: [0, 2, 3, 61, 80][Math.floor(Math.random() * 5)],
+                    windspeed: 4.8,
+                    time: timeArr[0]
+                },
+                hourly: {
+                    time: timeArr,
+                    temperature_2m: tempArr,
+                    precipitation_probability: probArr,
+                    weathercode: codeArr
+                }
+            };
+        }
+
+        // 특정 지역 터치 시 시간별 상세 기상 정보 바텀시트 가동
+        function showHourlyForecastSheet(regionId, regionName, regionDesc) {
+            const data = weatherCache[regionId];
+            if (!data || !data.hourly) {
+                showToast("강수 정보를 준비 중입니다. 날씨를 다시 새로고침해 주세요.");
+                return;
+            }
+
+            document.getElementById('sheet-region-name').innerText = regionName;
+            document.getElementById('sheet-region-desc').innerText = regionDesc;
+
+            const listContainer = document.getElementById('hourly-forecast-list');
+            listContainer.innerHTML = '';
+
+            // 현재 예보 시작점 인덱스 검색
+            let startIndex = data.hourly.time.findIndex(t => t === data.current_weather.time);
+            if (startIndex === -1) startIndex = 0;
+
+            // 향후 6시간 동안의 예보 바인딩
+            for (let i = 0; i < 6; i++) {
+                const idx = startIndex + i;
+                if (!data.hourly.time[idx]) break;
+
+                const timeRaw = data.hourly.time[idx];
+                const timeLabel = timeRaw.split('T')[1].substring(0, 5); // "13:00" 형태로 파싱
+                const tempVal = Math.round(data.hourly.temperature_2m[idx]);
+                const probVal = data.hourly.precipitation_probability[idx];
+                const wCode = data.hourly.weathercode[idx];
+                const info = getWeatherDetails(wCode);
+
+                const itemRow = document.createElement('div');
+                // 강수량 수치가 일정 수준(30%) 넘으면 경고형 UI 스타일 적용
+                const isHeavyRain = probVal >= 50;
+                const progressColor = isHeavyRain ? 'bg-indigo-500' : 'bg-teal-400';
+                const pillStyle = isHeavyRain 
+                    ? 'bg-indigo-50 text-indigo-700 border-indigo-200' 
+                    : 'bg-slate-50 text-slate-500 border-slate-100';
+
+                itemRow.className = `flex items-center justify-between p-3.5 rounded-2xl border bg-white ${isHeavyRain ? 'border-indigo-100 shadow-sm' : 'border-slate-100'}`;
+                itemRow.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-slate-400 w-10">${timeLabel}</span>
+                        <span class="text-xl">${info.emoji}</span>
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-slate-800">${info.text}</span>
+                            <span class="text-[10px] text-slate-400">${tempVal}°C</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 w-1/2 justify-end">
+                        <div class="flex flex-col items-end w-2/3">
+                            <div class="flex justify-between w-full text-[9px] font-bold text-slate-400 mb-1">
+                                <span>비 올 확률</span>
+                                <span class="${isHeavyRain ? 'text-indigo-600' : 'text-slate-500'}">${probVal}%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                <div class="${progressColor} h-full rounded-full" style="width: ${probVal}%"></div>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-lg border flex-shrink-0 ${pillStyle}">
+                            ${isHeavyRain ? '🌂 우산 필수' : '🌤️ 맑음'}
+                        </span>
+                    </div>
+                `;
+                listContainer.appendChild(itemRow);
+            }
+
+            // 바텀시트 활성화 애니메이션 및 백드롭 가동
+            const sheet = document.getElementById('weather-sheet');
+            const backdrop = document.getElementById('sheet-backdrop');
+            
+            backdrop.classList.remove('hidden');
+            setTimeout(() => {
+                sheet.classList.remove('translate-y-full');
+                backdrop.classList.remove('opacity-0');
+            }, 50);
+        }
+
+        // 바텀시트 퇴장 처리
+        function closeWeatherSheet() {
+            const sheet = document.getElementById('weather-sheet');
+            const backdrop = document.getElementById('sheet-backdrop');
+            
+            sheet.classList.add('translate-y-full');
+            backdrop.classList.add('opacity-0');
+            setTimeout(() => {
+                backdrop.classList.add('hidden');
+            }, 300);
         }
 
         // Detailed course database for Sunny & Rainy modes
@@ -541,6 +705,9 @@
                 const textSpan = activeBtn.querySelector('span');
                 if (textSpan) textSpan.classList.add('font-bold');
             }
+
+            // 스크롤 포커스를 매번 상단으로 제어해 부드러운 앱 사용성 연출
+            document.getElementById('main-content').scrollTop = 0;
         }
 
         function toggleRainMode(toggleInput) {
@@ -625,11 +792,11 @@
             
             // Set active states on buttons
             document.querySelectorAll('.food-region-btn').forEach(btn => {
-                btn.className = "food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all";
+                btn.className = "food-region-btn flex-shrink-0 px-3.5 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all";
             });
             const activeBtn = document.getElementById(`food-${region}-btn`);
             if (activeBtn) {
-                activeBtn.className = "food-region-btn flex-1 px-3 py-2 text-center text-xs font-bold rounded-lg bg-white text-teal-600 shadow-sm transition-all";
+                activeBtn.className = "food-region-btn flex-shrink-0 px-3.5 py-2 text-center text-xs font-bold rounded-lg bg-white text-teal-600 shadow-sm transition-all";
             }
 
             renderFoodList();
@@ -827,7 +994,7 @@
             } else {
                 // Formatting helper for Markdown-style bold in Gemini responses
                 let formattedText = text
-                    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                    .replace(/\*\*(.*?)\*\"/g, '<b>$1</b>')
                     .replace(/\n/g, '<br>');
 
                 wrapper.className = "flex gap-2.5 items-start";
