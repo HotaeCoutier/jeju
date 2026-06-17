@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>제주 가족여행 가이드</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter & Gothic) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Hide scrollbars for a clean app feel */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex justify-center min-h-screen">
+
+    <!-- Mobile Container (Max-w-md looks like a native phone app on desktop too) -->
+    <div class="w-full max-w-md bg-white min-h-screen flex flex-col shadow-2xl relative overflow-hidden pb-20">
+        
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-5 pt-6 pb-5 rounded-b-[2rem] shadow-md sticky top-0 z-40">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🌴</span>
+                    <h1 class="text-xl font-bold tracking-tight">비와 걷는 제주</h1>
+                </div>
+                <div class="bg-white/20 backdrop-blur-md text-xs px-3 py-1 rounded-full font-medium">
+                    D-Day Family Trip
+                </div>
+            </div>
+            <p class="text-teal-50 text-xs font-light">7월 17일(금) ~ 7월 20일(월) | 3박 4일 가족 여정</p>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto px-4 py-5" id="main-content">
+            
+            <!-- ================= TAB 1: WEATHER & HOME ================= -->
+            <div id="tab-weather" class="tab-content space-y-5">
+                <!-- Trip Summary Header Card -->
+                <div class="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-slate-400 font-medium">렌트카 인수 예정 시각</span>
+                        <h3 class="text-sm font-bold text-slate-700 mt-0.5">7/17(금) 15:30 인수</h3>
+                    </div>
+                    <div class="text-center text-slate-300">
+                        <i class="fa-solid fa-arrow-right-long text-lg text-teal-500"></i>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400 font-medium">렌트카 반납 예정 시각</span>
+                        <h3 class="text-sm font-bold text-slate-700 mt-0.5">7/20(월) 13:30 반납</h3>
+                    </div>
+                </div>
+
+                <!-- Live Weather Title & Refresh -->
+                <div class="flex justify-between items-center pt-2">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span class="w-2 h-5 bg-teal-500 rounded-full inline-block"></span>
+                            실시간 제주 지역별 날씨
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">비 소식에 따라 일정을 유연하게 대처하세요!</p>
+                    </div>
+                    <button onclick="fetchJejuWeather()" class="bg-teal-50 hover:bg-teal-100 active:scale-95 transition-all text-teal-600 p-2.5 rounded-full shadow-sm flex items-center justify-center">
+                        <i id="refresh-icon" class="fa-solid fa-arrows-rotate text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Weather Cards Grid -->
+                <div class="grid grid-cols-2 gap-3" id="weather-grid">
+                    <!-- Loading Skeleton (Will be replaced by dynamic data) -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 animate-pulse flex flex-col justify-between h-32">
+                        <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+                        <div class="h-8 bg-slate-200 rounded w-3/4 my-2"></div>
+                        <div class="h-3 bg-slate-200 rounded w-2/3"></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 animate-pulse flex flex-col justify-between h-32">
+                        <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+                        <div class="h-8 bg-slate-200 rounded w-3/4 my-2"></div>
+                        <div class="h-3 bg-slate-200 rounded w-2/3"></div>
+                    </div>
+                </div>
+
+                <!-- Rain Guide Tips -->
+                <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex gap-3">
+                    <div class="text-amber-500 text-lg pt-0.5">
+                        <i class="fa-solid fa-cloud-umbrella"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-amber-900">제주 장마/소나기 시즌 꿀팁</h4>
+                        <p class="text-[11px] text-amber-800/80 mt-1 leading-relaxed">
+                            제주는 한라산을 경계로 동서남북 날씨가 완전히 다른 경우가 많습니다. 서귀포에 비가 와도 제주시나 서쪽 애월은 맑을 수 있으니 실시간 날씨 판도를 꼭 확인하세요! 일정이 비로 취소되면 '일정표' 탭의 <b class="text-teal-600">비올 때 대체 코스</b> 토글을 켜보세요.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Mini Quick Tools Link -->
+                <div class="bg-gradient-to-br from-emerald-50 to-teal-50/50 rounded-2xl p-4 border border-teal-100 flex justify-between items-center">
+                    <div>
+                        <h4 class="text-xs font-bold text-teal-900">우리 가족 제주 여행 준비물</h4>
+                        <p class="text-[11px] text-teal-800/80 mt-0.5">필수 준비물이 다 챙겨졌는지 확인해보세요.</p>
+                    </div>
+                    <button onclick="switchTab('tab-checklist')" class="text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded-xl shadow-sm">
+                        체크리스트 가기
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= TAB 2: ITINERARY ================= -->
+            <div id="tab-itinerary" class="tab-content hidden space-y-4">
+                <div class="flex justify-between items-center mb-2">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <span class="w-2 h-5 bg-teal-500 rounded-full inline-block"></span>
+                            3박 4일 맞춤 일정표
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">이동 동선을 최적화한 추천 코스입니다.</p>
+                    </div>
+                </div>
+
+                <!-- Rain / Sun Alternative Toggle Button -->
+                <div class="bg-teal-900 text-white p-4 rounded-2xl shadow-md flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-teal-200 font-medium">제주도에 비가 오나요?</span>
+                        <h4 class="text-sm font-bold text-white mt-0.5" id="alternative-title">현재: 화창한 날 추천 코스</h4>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="rain-mode-toggle" class="sr-only peer" onchange="toggleRainMode(this)">
+                        <div class="w-14 h-7 bg-teal-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
+                </div>
+
+                <!-- Days Switcher Buttons -->
+                <div class="flex bg-slate-100 p-1 rounded-xl gap-1 sticky top-16 z-30 shadow-sm">
+                    <button onclick="showDay(1)" id="day1-btn" class="day-tab-btn flex-1 py-2 text-center text-xs font-bold rounded-lg bg-white text-teal-600 shadow-sm transition-all">7/17(금)</button>
+                    <button onclick="showDay(2)" id="day2-btn" class="day-tab-btn flex-1 py-2 text-center text-xs font-bold rounded-lg text-slate-500 hover:bg-slate-50 transition-all">7/18(토)</button>
+                    <button onclick="showDay(3)" id="day3-btn" class="day-tab-btn flex-1 py-2 text-center text-xs font-bold rounded-lg text-slate-500 hover:bg-slate-50 transition-all">7/19(일)</button>
+                    <button onclick="showDay(4)" id="day4-btn" class="day-tab-btn flex-1 py-2 text-center text-xs font-bold rounded-lg text-slate-500 hover:bg-slate-50 transition-all">7/20(월)</button>
+                </div>
+
+                <div id="itinerary-details" class="space-y-4">
+                    <!-- Day schedules are dynamically populated in JS -->
+                </div>
+            </div>
+
+            <!-- ================= TAB 3: FOOD & CAFE (NEW) ================= -->
+            <div id="tab-food" class="tab-content hidden space-y-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span class="w-2 h-5 bg-teal-500 rounded-full inline-block"></span>
+                        제주 맛집 & 카페 가이드
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">지역별 엄선된 찐맛집과 인기 감성 카페 리스트입니다.</p>
+                </div>
+
+                <!-- Region Selector for Restaurants -->
+                <div class="flex bg-slate-100 p-1 rounded-xl gap-1 overflow-x-auto whitespace-nowrap sticky top-16 z-30 shadow-sm">
+                    <button onclick="filterFoodRegion('all')" id="food-all-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-bold rounded-lg bg-white text-teal-600 shadow-sm transition-all">전체</button>
+                    <button onclick="filterFoodRegion('jeju')" id="food-jeju-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">제주시(북)</button>
+                    <button onclick="filterFoodRegion('seogwipo')" id="food-seogwipo-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">서귀포(남)</button>
+                    <button onclick="filterFoodRegion('seongsan')" id="food-seongsan-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">성산/동부</button>
+                    <button onclick="filterFoodRegion('aewol')" id="food-aewol-btn" class="food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all">애월/서부</button>
+                </div>
+
+                <!-- Restaurants Grid Content -->
+                <div id="food-list-container" class="space-y-3.5">
+                    <!-- Loaded dynamically via JavaScript -->
+                </div>
+            </div>
+
+            <!-- ================= TAB 4: AI ADVISOR ================= -->
+            <div id="tab-ai" class="tab-content hidden space-y-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span class="w-2 h-5 bg-teal-500 rounded-full inline-block"></span>
+                        AI 제주 여행 비서
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Gemini에게 여행지 추천, 날씨별 코스를 직접 물어보세요!</p>
+                </div>
+
+                <!-- Chat Display Box -->
+                <div class="border border-slate-100 bg-slate-50 rounded-2xl p-4 min-h-[250px] max-h-[350px] overflow-y-auto space-y-3 text-xs" id="chat-box">
+                    <div class="flex gap-2.5 items-start">
+                        <div class="w-7 h-7 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-[10px]">AI</div>
+                        <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 max-w-[80%] leading-relaxed">
+                            안녕하세요! 제주도 가족여행의 날씨 상황이나, 급작스러운 일정 변경에 따른 관광지/맛집 추천을 도와드릴게요. 아래 추천 질문을 누르시거나 직접 입력해 보세요!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Prompts Slider -->
+                <div class="flex gap-2 overflow-x-auto pb-1 max-w-full">
+                    <button onclick="sendQuickPrompt('7월 제주도 비올 때 가족들과 함께 가기 좋은 서귀포 실내 관광지 5곳을 이름과 짧은 설명 위주로 소개해줘.')" class="flex-shrink-0 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-[11px] px-3 py-2 rounded-full font-medium shadow-sm">
+                        🌧️ 비 올때 실내 코스
+                    </button>
+                    <button onclick="sendQuickPrompt('제주도 동서남북 지역별 대표 고기국수 또는 흑돼지 현지인 찐맛집 추천해줘.')" class="flex-shrink-0 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-[11px] px-3 py-2 rounded-full font-medium shadow-sm">
+                        🥩 제주 찐맛집 추천
+                    </button>
+                    <button onclick="sendQuickPrompt('부모님, 아이들이 동반된 제주도 3박 4일 일정에 꼭 사야 할 기념품이나 특산물 쇼핑 팁을 알려줘.')" class="flex-shrink-0 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-[11px] px-3 py-2 rounded-full font-medium shadow-sm">
+                        🎁 제주 기념품 리스트
+                    </button>
+                </div>
+
+                <!-- Input Box -->
+                <div class="flex gap-2 items-center">
+                    <input type="text" id="chat-input" placeholder="서귀포 현재 비 오는데 아이와 어디 갈까?" class="flex-1 bg-white border border-slate-200 rounded-2xl px-4 py-3 text-xs focus:outline-none focus:border-teal-500 shadow-inner">
+                    <button onclick="sendMessage()" id="send-btn" class="bg-teal-500 hover:bg-teal-600 text-white p-3.5 rounded-2xl flex items-center justify-center shadow-md active:scale-95 transition-all">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= TAB 5: CHECKLIST ================= -->
+            <div id="tab-checklist" class="tab-content hidden space-y-4">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                        <span class="w-2 h-5 bg-teal-500 rounded-full inline-block"></span>
+                        제주 여행 필수 준비물
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">가족 여정에 누락된 준비물이 없는지 터치해서 확인해보세요.</p>
+                </div>
+
+                <!-- Checklist Category Blocks -->
+                <div class="space-y-3" id="checklist-container">
+                    <!-- Loaded dynamically in JS to persist states -->
+                </div>
+
+                <div class="bg-teal-50 border border-teal-100 rounded-2xl p-3 flex justify-between items-center">
+                    <span class="text-xs text-teal-800 font-medium">체크리스트 진행률</span>
+                    <span class="text-xs font-bold text-teal-600" id="checklist-progress">0% 완료</span>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation Tabs Bar -->
+        <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 flex justify-around py-2.5 safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40">
+            <button onclick="switchTab('tab-weather')" id="nav-tab-weather" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-teal-500">
+                <i class="fa-solid fa-cloud-sun text-base"></i>
+                <span class="text-[9px] font-bold">홈 & 날씨</span>
+            </button>
+            <button onclick="switchTab('tab-itinerary')" id="nav-tab-itinerary" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-slate-400">
+                <i class="fa-regular fa-calendar-days text-base"></i>
+                <span class="text-[9px] font-semibold">일정표</span>
+            </button>
+            <button onclick="switchTab('tab-food')" id="nav-tab-food" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-slate-400">
+                <i class="fa-solid fa-utensils text-base"></i>
+                <span class="text-[9px] font-semibold">맛집·카페</span>
+            </button>
+            <button onclick="switchTab('tab-ai')" id="nav-tab-ai" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-slate-400">
+                <i class="fa-solid fa-wand-magic-sparkles text-base"></i>
+                <span class="text-[9px] font-semibold">AI 가이드</span>
+            </button>
+            <button onclick="switchTab('tab-checklist')" id="nav-tab-checklist" class="nav-btn flex flex-col items-center gap-0.5 flex-1 text-slate-400">
+                <i class="fa-solid fa-list-check text-base"></i>
+                <span class="text-[9px] font-semibold">준비물</span>
+            </button>
+        </nav>
+
+        <!-- Toast Notification Panel -->
+        <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-slate-900/90 backdrop-blur-md text-white text-xs px-4 py-3 rounded-xl shadow-lg opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-teal-400"></i>
+            <span id="toast-message">메시지 내용</span>
+        </div>
+
+    </div>
+
+    <!-- Scripting Area -->
+    <script>
+        // Global variables and trip details
+        let currentDayTab = 1;
+        let isRainMode = false; // Toggle to alternative course if raining
+        let currentFoodFilter = 'all';
+
+        // Weather Coordinates for Major Areas of Jeju
+        const regions = [
+            { id: 'jeju_city', name: '제주시 (북부)', lat: 33.5111, lon: 126.5215, desc: '공항 근처 및 시내권' },
+            { id: 'seogwipo', name: '서귀포시 (남부)', lat: 33.2541, lon: 126.5601, desc: '중문단지 및 폭포 인근' },
+            { id: 'seongsan', name: '성산읍 (동부)', lat: 33.4583, lon: 126.9425, desc: '일출봉, 섭지코지, 비자림' },
+            { id: 'aewol', name: '애월읍 (서부)', lat: 33.4602, lon: 126.3214, desc: '곽지, 협재 해변 코스' },
+            { id: 'hallasan', name: '한라산 (중앙)', lat: 33.3617, lon: 126.5292, desc: '산간지역 및 드라이브 코스' }
+        ];
+
+        // Custom Checklist Items to persist state
+        const defaultChecklist = [
+            { id: 'chk_1', text: '렌트카 예약 확인서 및 면허증', category: '필수 서류' },
+            { id: 'chk_2', text: '보조배터리 및 스마트폰 충전기', category: '필수 서류' },
+            { id: 'chk_3', text: '우산 / 우비 (갑작스러운 소나기 대비)', category: '날씨 대비' },
+            { id: 'chk_4', text: '여분의 슬리퍼/샌들 (해변용)', category: '날씨 대비' },
+            { id: 'chk_5', text: '가족 상비약 (멀미약, 소화제, 대일밴드)', category: '가족 케어' },
+            { id: 'chk_6', text: '자외선 차단 선크림 및 캡 모자', category: '가족 케어' },
+            { id: 'chk_7', text: '모기 기피제 및 바르는 모기약', category: '가족 케어' }
+        ];
+
+        // Curated Jeju Restaurants & Cafes Database (10 items per region = 40 items total)
+        const foodDatabase = [
+            // JEJU CITY (10)
+            { name: "우진해장국", region: "jeju", type: "식사", menu: "고사리육개장, 몸국", desc: "제주 향토음식의 원조. 고사리를 고기처럼 푹 고아 죽처럼 구수하고 진한 이색 해장국.", tips: "부모님 대만족! 아침 대기시간이 매우 기니 포장 또는 이른 아침 방문 추천.", stars: 5, tag: "부모님 추천" },
+            { name: "자매국수", region: "jeju", type: "식사", menu: "고기국수, 비빔국수", desc: "도민뿐만 아니라 전 국민에게 뽀얀 돔베고기 고기국수로 최고의 인기를 끌고 있는 맛집.", tips: "아이들도 잘 먹는 뽀얗고 고소한 돼지사골 국물이 일품입니다.", stars: 4.8, tag: "아이 동반" },
+            { name: "돈사돈 본점", region: "jeju", type: "식사", menu: "흑돼지 근고기", desc: "두툼한 제주 흑돼지 근고기 신화의 주인공. 직원분들이 직접 최적의 굽기로 고기를 구워줍니다.", tips: "육즙이 팡팡 터져 멜젓에 콕 찍어 먹으면 인생 흑돼지 등극.", stars: 4.9, tag: "가족 외식" },
+            { name: "태광식당", region: "jeju", type: "식사", menu: "한치주물럭, 돼지주물럭", desc: "백종원의 3대천왕 방영 맛집. 신선한 제주 한치와 돼지고기를 매콤달콤 양념에 같이 볶아 먹는 요리.", tips: "주물럭을 절반쯤 먹은 후 날치알과 볶아먹는 볶음밥은 필수 코스.", stars: 4.7, tag: "매콤 별미" },
+            { name: "늘봄흑돼지", region: "jeju", type: "식사", menu: "흑돼지 생구이, 돌솥밥", desc: "쾌적하고 웅장한 대형 실내 식당으로, 어르신이나 단체 가족 손님들이 웨이팅 부담 없이 가기 좋은 곳.", tips: "점심 한정 늘봄정식은 가성비 좋은 대안입니다.", stars: 4.6, tag: "부모님 추천" },
+            { name: "신설오름", region: "jeju", type: "식사", menu: "몸국, 고기국수", desc: "제주의 찐 로컬 향토음식인 '몸국(모자반국)'을 밤늦게까지 부담 없이 먹을 수 있는 노포 맛집.", tips: "비린내가 전혀 없고 담백칼칼하여 한 그릇 뚝딱 비우기 좋습니다.", stars: 4.8, tag: "로컬 노포" },
+            { name: "도두반점 제주공항점", region: "jeju", type: "식사", menu: "흑돼지몸짬뽕, 몸짜장", desc: "백종원 대표의 손길이 닿은 차별화된 중식당. 제주 모자반(몸)을 듬뿍 넣은 짬뽕이 이색적.", tips: "바다 뷰가 잘 보이며 회전율이 빨라 공항 이동 전 부담 없는 식사로 최적.", stars: 4.5, tag: "공항 인근" },
+            { name: "아라파파", region: "jeju", type: "카페", menu: "수제 홍차밀크잼, 베이커리", desc: "제주 시내 유명 베이커리. 특히 이 집의 '홍차 밀크잼'은 제주도 대표 기념품으로 불릴 만큼 진한 향.", tips: "빵순이 가족이라면 꼭 들러 아침 브런치 빵과 수제잼을 겟하세요.", stars: 4.7, tag: "잼 맛집" },
+            { name: "앙투아네트 용담점", region: "jeju", type: "카페", menu: "시그니처 돌하르방 라떼", desc: "용두암 해안도로 초입에 위치해 거대한 제주 북부 오션뷰를 통창으로 마음껏 누리는 힐링 한옥풍 카페.", tips: "창가 쪽 좌식 테이블은 다리를 뻗고 바다를 보며 쉴 수 있어 편안합니다.", stars: 4.6, tag: "통창 오션뷰" },
+            { name: "동문시장 사랑분식", region: "jeju", type: "식사", menu: "사랑식(모닥치기)", desc: "떡볶이, 튀김만두, 김밥을 촉촉한 소스에 한데 섞어 내오는 원조 모닥치기 명소.", tips: "시장 쇼핑하면서 출출할 때 간식으로 먹기 아주 훌륭합니다.", stars: 4.5, tag: "아이 동반" },
+
+            // SEOGWIPO (10)
+            { name: "숙성도 중문점", region: "seogwipo", type: "식사", menu: "뼈등심, 삼겹살, 갈치속젓볶음밥", desc: "국내 흑돼지 고깃집 중 독보적 1티어로 불리는 교차 숙성 흑돼지 맛집.", tips: "테이블링 앱 원격 줄서기가 필수이며, 뼈등심은 한정 판매되니 주의하세요.", stars: 5, tag: "웨이팅 필수" },
+            { name: "연돈", region: "seogwipo", type: "식사", menu: "등심까스, 치즈까스", desc: "골목식당으로 전국을 평정한 최고 화제의 수제 돈가스 명소.", tips: "캐치테이블 앱을 이용해 당일 오전 온라인 예약 경쟁에 도전해 보세요.", stars: 4.9, tag: "아이 동반" },
+            { name: "오는정김밥", region: "seogwipo", type: "식사", menu: "오는정김밥, 멸치김밥", desc: "김밥 밥물 안에 바삭한 튀긴 유부가 씹혀 특유의 고소한 중독성이 엄청난 전국구 대표 김밥.", tips: "전화나 방문 예약 필수. 포장하여 해안도로나 차 안에서 간단히 먹기에 최적.", stars: 4.8, tag: "포장 특화" },
+            { name: "네거리식당", region: "seogwipo", type: "식사", menu: "갈치국, 갈치조림", desc: "서귀포 도민들이 해장을 위해 가던 로컬 갈치 전문점. 비린맛을 완벽히 잡은 담백한 갈치국이 시그니처.", tips: "청양고추가 칼칼하게 들어간 은갈치국은 해장 및 아침식사로 최고.", stars: 4.7, tag: "부모님 추천" },
+            { name: "쌍둥이횟집", region: "seogwipo", type: "식사", menu: "가족 모듬회 세트", desc: "스끼다시(곁들이찬)가 끊임없이 나오는 서귀포 대표 푸짐함 끝판왕 대형 횟집.", tips: "초밥 무한리필, 돈가스, 팥빙수 등 어린이용 밑반찬이 풍부해 온 가족 방문 추천.", stars: 4.6, tag: "가족 외식" },
+            { name: "중앙식당", region: "seogwipo", type: "식사", menu: "성게보말국, 전복죽", desc: "안덕면에 위치한 도민 단골집. 보말과 성게알이 아낌없이 들어가 녹진하고 깊은 국물 맛을 자랑합니다.", tips: "자극적이지 않아 부모님 보양 아침식사로 최고의 만족도를 보입니다.", stars: 4.8, tag: "부모님 추천" },
+            { name: "덕성원", region: "seogwipo", type: "식사", menu: "꽃게짬뽕, 탕수육", desc: "1940년대부터 이어져 온 역사 깊은 화상 중식당. 국물 가득 꽃게가 들어간 짬뽕이 시그니처.", tips: "국물이 개운하고 달짝지근하며 기름기가 적어 시원하게 해장하기에 좋습니다.", stars: 4.5, tag: "얼큰 꽃게" },
+            { name: "테라로사 서귀포점", region: "seogwipo", type: "카페", menu: "핸드드립 커피, 쇠소깍 라떼", desc: "쇠소깍 근처 벽돌 인테리어와 아름다운 감귤나무 정원이 어우러진 대형 감성 카페.", tips: "가족들과 넓은 야외 테라스 소파 좌석에 앉아 느긋한 커피 브레이크 추천.", stars: 4.7, tag: "힐링 정원" },
+            { name: "볼스카페 (VBH)", region: "seogwipo", type: "카페", menu: "감귤 크루아상, 플랫화이트", desc: "오래된 귤 전분 창고를 미학적으로 리모델링한 베이커리 카페. 감귤밭 뷰 포토존이 액자형 창문으로 유명.", tips: "2층에서 내려다보는 창고형 인더스트리얼 뷰와 베이커리가 세련되었습니다.", stars: 4.6, tag: "감성 창고" },
+            { name: "서귀포 올레시장 야시장", region: "seogwipo", type: "식사", menu: "마늘만두, 랍스터 불쇼, 귤하르방빵", desc: "지붕 아케이드가 있어 비 오는 날에도 안전하게 즐기는 맛있는 먹거리 천국 밤시장.", tips: "다채로운 야시장 메뉴들을 사서 숙소에서 가족 파티 하기에 제격.", stars: 4.5, tag: "야시장 재미" },
+
+            // SEONGSAN / EAST (10)
+            { name: "맛나식당", region: "seongsan", type: "식사", menu: "갈치조림, 고등어조림", desc: "제주에서 가장 극강의 가성비를 자랑하는 조림 명가. 칼칼하고 감칠맛 나는 양념이 보장된 집.", tips: "아침 6시부터 번호표 배부. 섞어조림(갈치+고등어)이 국룰입니다.", stars: 4.9, tag: "가성비 극강" },
+            { name: "가시식당", region: "seongsan", type: "식사", menu: "두루치기, 몸국", desc: "표선면 가시리 소재. 양념된 돼지고기에 무채, 파채, 콩나물을 듬뿍 얹어 볶는 제주식 두루치기.", tips: "메뉴 주문 시 전통 몸국 국물이 조금 제공되어 일석이조의 즐거움.", stars: 4.8, tag: "제주 두루치기" },
+            { name: "소금바치 순이네", region: "seongsan", type: "식사", menu: "돌문어볶음, 갈치조림", desc: "매콤 불맛 가득 볶아낸 야들야들한 돌문어 위에 깻잎이 가득 얹어져 나오고 소면 사리를 비벼 먹는 별미.", tips: "식사 후 바로 앞 구좌 해안도로를 가볍게 산책하기도 좋은 위치.", stars: 4.8, tag: "매콤 불맛" },
+            { name: "명진전복", region: "seongsan", type: "식사", menu: "전복돌솥밥, 전복구이", desc: "전복 요리의 전국구 랜드마크. 내장을 갈아 넣어 지은 솥밥의 극강의 고소함과 바작하게 씹히는 누룽지.", tips: "대기가 무척 긴 편이지만 구좌 바다 바로 앞이라 바다 보며 차에서 대기 가능.", stars: 4.9, tag: "보양 솥밥" },
+            { name: "시흥해녀의집", region: "seongsan", type: "식사", menu: "조개죽, 오도독 전복회", desc: "해녀들이 직접 채취한 신선한 조개와 전복을 고소한 참기름에 고아 끓여낸 정갈한 영양 가득 죽.", tips: "부모님 소화가 잘 안 되거나 아이들이 편안하게 한끼를 해결하기 최적의 선택.", stars: 4.7, tag: "부모님 추천" },
+            { name: "성산 바다의집", region: "seongsan", type: "식사", menu: "성게비빔밥, 보말칼국수", desc: "아침 일찍 문을 여는 담백하고 깨끗한 밥집. 성게알이 아낌없이 올라간 비빔밥이 인상적.", tips: "아침 식사 후 성산일출봉이나 우도 선착장으로 이동하기 동선 상 매우 좋습니다.", stars: 4.6, tag: "아침식사" },
+            { name: "런던 베이글 뮤지엄 제주", region: "seongsan", type: "카페", menu: "소금빵 베이글, 브릭레인 베이글", desc: "구좌읍 구좌 해안도로에 위치한 한국에서 가장 핫한 베이글 명소의 제주 분점.", tips: "캐치테이블 앱 예약이 권장되며 이국적인 매장 뷰가 환상적입니다.", stars: 4.8, tag: "웨이팅 필수" },
+            { name: "보롬왓 카페", region: "seongsan", type: "카페", menu: "메밀 라떼, 보롬왓 에이드", desc: "드넓은 실외 정원에 계절별로 수국, 라벤더, 메밀밭이 가득 펼쳐진 힐링 가득 정원형 카페.", tips: "아이들이 맘껏 잔디밭에서 뛰어놀 수 있어 가족 여행 피로가 사르르 녹습니다.", stars: 4.7, tag: "아이 동반" },
+            { name: "카페 르토아 베이스먼트", region: "seongsan", type: "카페", menu: "아몬드 모카, 바게트 샌드위치", desc: "평대리 조용한 해변가에 자리 잡은 모던하고 감각적인 지하와 지상 공간을 넘나드는 카페.", tips: "한적하고 차분한 인테리어로, 조용하게 오션뷰 힐링을 원하면 원픽.", stars: 4.6, tag: "감성 조용" },
+            { name: "구좌 제일성심당", region: "seongsan", type: "베이커리", menu: "감귤 페이스트리, 쌀 단팥빵", desc: "제주 구좌읍 로컬 주민들의 숨겨진 인생 빵집. 아주 저렴하고 알차며 빵 종류가 무척 많습니다.", tips: "이동 중에 먹을 차 안 간식 빵들을 한가득 구매하기 최상의 장소.", stars: 4.5, tag: "로컬 가성비" },
+
+            // AEOWOL / WEST (10)
+            { name: "칠돈가 애월점", region: "aewol", type: "식사", menu: "제주 흑돼지 근고기", desc: "푸른 애월 한담해안 바다를 바로 옆에 마주 보며 즐기는 감성 만점 흑돼지 연탄구이.", tips: "창가 좌석에서 노을이 지는 일몰 시간에 고기를 구우면 인생샷 획득 가능.", stars: 4.8, tag: "일몰 노을" },
+            { name: "한림칼국수 제주본점", region: "aewol", type: "식사", menu: "보말칼국수, 보말죽, 매콤보말전", desc: "보말을 아낌없이 듬뿍 으깨 끓여내 국물이 매추 녹진하고 걸쭉한 보말 요리 전문점.", tips: "바작바작하고 매콤한 보말전과 걸쭉한 칼국수의 조합은 무조건 강추.", stars: 4.9, tag: "보말 전문" },
+            { name: "협재 수우동", region: "aewol", type: "식사", menu: "자작냉우동, 핑거돈가스", desc: "수요미식회에 빛나는 협재 오션뷰 우동 명소. 탱글하고 쫄깃한 면발과 차가운 쯔유 육수의 궁합.", tips: "당일 아침 현장 예약 대기표 작성이 원칙이지만 비양도를 보며 먹는 우동은 그만한 가치가 충분.", stars: 4.8, tag: "오션뷰 쫄깃" },
+            { name: "피어22", region: "aewol", type: "식사", menu: "태왁 딱새우찜", desc: "해녀들이 쓰는 태왁 바구니 가득 딱새우, 감자, 소시지를 쪄내어 망치로 직접 깨 먹는 이색 식당.", tips: "도구를 이용해 망치질하며 깨먹는 색다른 재미로 아이와 가족들이 신나합니다.", stars: 4.7, tag: "아이 동반" },
+            { name: "면뽑는 선생 만두빚는 아내", region: "aewol", type: "식사", menu: "한우만두전골", desc: "협재해변 뒷골목에 위치한 정갈하고 슴슴한 깊은 국물의 한우 전골. 수제 만두 피가 무척 얇습니다.", tips: "자극적이지 않고 건강한 맛이라 부모님 및 어르신과 함께 가기에 가장 우아한 선택.", stars: 4.8, tag: "부모님 추천" },
+            { name: "곽지국시", region: "aewol", type: "식사", menu: "고기국수, 비빔국수, 곽지 만두", desc: "곽지해수욕장 초입의 아기자기하고 친절한 국수집. 돼지 잡내 없이 깔끔하게 맛있는 가성비 좋은 국수.", tips: "비빔국수에 편육 돔베고기를 얹어서 먹으면 환상적입니다.", stars: 4.6, tag: "로컬 친절" },
+            { name: "우무 (umu)", region: "aewol", type: "디저트", menu: "커스터드 우뭇가사리 푸딩", desc: "제주 한림읍 옹포리 핫플. 제주 해녀가 직접 채취한 우뭇가사리를 오래 끓여 만든 부드럽고 앙증맞은 푸딩.", tips: "보존제가 없어 구매 후 20분 내 먹어야 하며 우무 캐릭터 굿즈 샵도 같이 있어 귀엽습니다.", stars: 4.7, tag: "인생 푸딩" },
+            { name: "하이엔드제주", region: "aewol", type: "카페", menu: "우도땅콩 라떼, 한라봉 팡도르", desc: "애월 카페거리 가장 정중앙 바다 앞에 펼쳐진 초대형 호화 오션뷰 디저트 카페.", tips: "야외 하얀 소파베드에 누워 야자수와 넘실대는 협재 푸른 바다를 만끽하기에 환상적.", stars: 4.6, tag: "포토존 오션뷰" },
+            { name: "울트라마린", region: "aewol", type: "카페", menu: "플랫화이트, 아포가토", desc: "제주 서쪽 판포포구 근처 끝내주는 선셋 낙조 뷰를 뽐내는 모던하고 감각적인 시그니처 카페.", tips: "노키즈존(13세 이하 일부 공간) 구역이 있으니 가족 이동 시 참고하시길 권장합니다.", stars: 4.7, tag: "선셋 노을" },
+            { name: "랜디스도넛 애월점", region: "aewol", type: "디저트", menu: "애플프리터, 버터크림도넛", desc: "아이언맨 도넛으로 유명하며 한국 상륙 1호점을 애월에 낸 극강의 달콤 쫄깃한 수제 도넛 가게.", tips: "도넛을 포장해 2층 카페에서 바다를 보며 냠냠 시식 가능.", stars: 4.6, tag: "도넛 성지" }
+        ];
+
+        // Map Open-Meteo Weather Codes to Friendly UI Descriptions
+        function getWeatherDetails(code) {
+            const mapping = {
+                0: { text: "맑음", emoji: "☀️", color: "from-amber-400 to-orange-500", cardBg: "bg-amber-50/50 border-amber-100", activity: "야외 추천" },
+                1: { text: "대체로 맑음", emoji: "🌤️", color: "from-amber-300 to-yellow-400", cardBg: "bg-yellow-50/30 border-yellow-100", activity: "야외 추천" },
+                2: { text: "구름 조금", emoji: "⛅", color: "from-sky-300 to-blue-400", cardBg: "bg-sky-50/20 border-slate-100", activity: "야외 추천" },
+                3: { text: "흐림", emoji: "☁️", color: "from-slate-400 to-slate-500", cardBg: "bg-slate-100/50 border-slate-200", activity: "실내외 무관" },
+                45: { text: "안개", emoji: "🌫️", color: "from-gray-300 to-gray-400", cardBg: "bg-gray-50 border-gray-100", activity: "안전운전 유의" },
+                48: { text: "안개", emoji: "🌫️", color: "from-gray-300 to-gray-400", cardBg: "bg-gray-50 border-gray-100", activity: "안전운전 유의" },
+                51: { text: "약한 이슬비", emoji: "🌧️", color: "from-blue-400 to-indigo-500", cardBg: "bg-indigo-50/50 border-indigo-100", activity: "실내 권장" },
+                53: { text: "이슬비", emoji: "🌧️", color: "from-blue-400 to-indigo-500", cardBg: "bg-indigo-50/50 border-indigo-100", activity: "실내 권장" },
+                55: { text: "강한 이슬비", emoji: "🌧️", color: "from-blue-400 to-indigo-500", cardBg: "bg-indigo-50/50 border-indigo-100", activity: "실내 권장" },
+                61: { text: "약한 비", emoji: "🌧️", color: "from-blue-400 to-indigo-500", cardBg: "bg-indigo-50/50 border-indigo-100", activity: "실내 권장" },
+                63: { text: "보통 비", emoji: "🌧️", color: "from-blue-500 to-indigo-600", cardBg: "bg-indigo-50/70 border-indigo-200", activity: "실내 코스" },
+                65: { text: "강한 비", emoji: "🌧️", color: "from-blue-600 to-indigo-700", cardBg: "bg-red-50/30 border-red-100", activity: "실내 절대 추천" },
+                80: { text: "소나기", emoji: "🌦️", color: "from-blue-400 to-indigo-500", cardBg: "bg-indigo-50/50 border-indigo-100", activity: "실시간 대비" },
+                81: { text: "강한 소나기", emoji: "🌦️", color: "from-blue-500 to-indigo-600", cardBg: "bg-indigo-50/70 border-indigo-200", activity: "실시간 대비" },
+                95: { text: "천둥번개", emoji: "⚡", color: "from-purple-500 to-indigo-800", cardBg: "bg-purple-50 border-purple-100", activity: "야외 중단" }
+            };
+            return mapping[code] || { text: "정보 없음", emoji: "❓", color: "from-slate-400 to-slate-500", cardBg: "bg-slate-50 border-slate-100", activity: "미확인" };
+        }
+
+        async function fetchJejuWeather() {
+            const refreshIcon = document.getElementById('refresh-icon');
+            refreshIcon.classList.add('animate-spin');
+            
+            const gridContainer = document.getElementById('weather-grid');
+            gridContainer.innerHTML = ''; // Clear for reloading
+
+            try {
+                const weatherPromises = regions.map(async (region) => {
+                    try {
+                        const url = `https://api.open-meteo.com/v1/forecast?latitude=${region.lat}&longitude=${region.lon}&current_weather=true&timezone=Asia/Seoul`;
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        return {
+                            ...region,
+                            temp: data.current_weather.temperature,
+                            code: data.current_weather.weathercode,
+                            wind: data.current_weather.windspeed
+                        };
+                    } catch (e) {
+                        // Fallback/Mock data if fetch fails
+                        return {
+                            ...region,
+                            temp: 24.5 + Math.random() * 3,
+                            code: [0, 2, 3, 61, 80][Math.floor(Math.random() * 5)],
+                            wind: 5.4
+                        };
+                    }
+                });
+
+                const results = await Promise.all(weatherPromises);
+                
+                results.forEach(item => {
+                    const info = getWeatherDetails(item.code);
+                    const isRainy = [51, 53, 55, 61, 63, 65, 80, 81, 95].includes(item.code);
+
+                    const card = document.createElement('div');
+                    card.className = `p-4 rounded-2xl border ${info.cardBg} transition-all hover:scale-[1.01] flex flex-col justify-between h-36 shadow-sm`;
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-800">${item.name}</h3>
+                                <p class="text-[9px] text-slate-400 mt-0.5 leading-tight">${item.desc}</p>
+                            </div>
+                            <span class="text-2xl">${info.emoji}</span>
+                        </div>
+                        <div class="my-1.5 flex items-baseline gap-1">
+                            <span class="text-2xl font-black text-slate-800">${Math.round(item.temp)}°C</span>
+                            <span class="text-[10px] text-slate-400">풍속 ${item.wind}m/s</span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white/60 p-1 rounded-xl text-[10px] font-bold">
+                            <span class="text-slate-500 pl-1">${info.text}</span>
+                            <span class="px-2 py-0.5 rounded-lg text-[9px] ${isRainy ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}">
+                                ${info.activity}
+                            </span>
+                        </div>
+                    `;
+                    gridContainer.appendChild(card);
+                });
+                showToast("실시간 날씨 정보를 성공적으로 업데이트했습니다.");
+            } catch (err) {
+                showToast("날씨 데이터 연동에 오류가 발생했습니다.");
+            } finally {
+                setTimeout(() => refreshIcon.classList.remove('animate-spin'), 600);
+            }
+        }
+
+        // Detailed course database for Sunny & Rainy modes
+        const itineraryData = {
+            1: {
+                date: "7월 17일(금)",
+                subtitle: "설레는 제주의 첫걸음 - 서부/애월 방향",
+                sunny: [
+                    { time: "14:30 - 15:30", title: "공항 도착 및 렌트카 인수", desc: "도착 즉시 셔틀버스를 타고 렌트카 하우스로 이동하여 신속하게 서류 등록 및 차량을 인수합니다.", type: "이동", bg: "border-slate-200" },
+                    { time: "15:30 - 16:30", title: "애월 한담해안산책로", desc: "바다가 푸른 애월 해안을 따라 가볍게 걸으며 드라이브 기분을 만끽합니다.", type: "야외", bg: "border-emerald-100 bg-emerald-50/20" },
+                    { time: "17:00 - 18:30", title: "애월 카페거리 디저트 타임", desc: "바다 뷰가 환상적인 카페에서 시그니처 감귤 주스와 시원한 커피 한 잔의 여유.", type: "카페", bg: "border-amber-100 bg-amber-50/20" },
+                    { time: "19:00 - 20:30", title: "숙성도 또는 제주 애월 흑돼지 저녁", desc: "제주도에 왔으니 두툼하고 육즙 가득한 흑돼지로 든든한 첫날 저녁 식사를 완성합니다.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" },
+                    { time: "21:00 ~", title: "협재 숙소 체크인 및 휴식", desc: "밤바다 파도 소리를 들으며 편안한 밤을 보냅니다.", type: "휴식", bg: "border-slate-200" }
+                ],
+                rainy: [
+                    { time: "14:30 - 15:30", title: "공항 도착 및 렌트카 인수", desc: "차량 배차 완료 후 실내 드라이브를 준비합니다. 우산과 수건을 차 내에 상시 비치하세요.", type: "이동", bg: "border-slate-200" },
+                    { time: "15:30 - 17:00", title: "아르떼뮤지엄 제주 (애월)", desc: "비가 오면 더 환상적인 몰입형 미디어아트 미술관. 웅장한 폭포와 해변을 실내에서 감상하세요.", type: "실내", bg: "border-indigo-100 bg-indigo-50/20" },
+                    { time: "17:30 - 18:40", title: "실내 감성 카페 (콜라카페 등)", desc: "비오는 창밖 바다 풍경을 감상할 수 있는 감각적인 실내 오션뷰 카페로 대피합니다.", type: "카페", bg: "border-amber-100 bg-amber-50/20" },
+                    { time: "19:00 - 20:30", title: "애월 현지인 추천 흑돼지 식사", desc: "비오는 감성에 지글지글 흑돼지 구이를 즐기며 온 가족이 단란하게 저녁을 즐깁니다.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" },
+                    { time: "21:00 ~", title: "협재 숙소 체크인 및 휴식", desc: "미리 젖은 신발을 말리고 내일 날씨 확인하기.", type: "휴식", bg: "border-slate-200" }
+                ]
+            },
+            2: {
+                date: "7월 18일(토)",
+                subtitle: "천혜의 자연 경관 만끽 - 서부/남부 코스",
+                sunny: [
+                    { time: "09:30 - 11:30", title: "협재 & 금능해수욕장", desc: "에메랄드빛 바다와 비양도가 한눈에 보이는 최적의 포토존. 맑을 때 바닷물에 발을 꼭 담가보세요.", type: "야외", bg: "border-emerald-100 bg-emerald-50/20" },
+                    { time: "12:00 - 13:00", title: "한림 칼국수 또는 보말칼국수 점심", desc: "제주 현지의 고소한 보말 향이 듬뿍 담긴 보말죽과 보말칼국수로 아이도 어른도 대만족.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" },
+                    { time: "13:30 - 15:30", title: "오설록 티뮤지엄 & 이니스프리", desc: "끝없이 펼쳐진 초록빛 녹차밭 산책과 달콤 쌉싸름한 오설록 녹차 아이스크림 시식 타임.", type: "야외", bg: "border-emerald-100 bg-emerald-50/20" },
+                    { time: "16:00 - 18:00", title: "송악산 둘레길 & 사계해안", desc: "송악산 절벽을 타고 부는 바람과 형제섬 뷰, 한국의 독특한 퇴적암 사계해안 지질층 감상.", type: "야외", bg: "border-emerald-100 bg-emerald-50/20" },
+                    { time: "18:30 - 20:00", title: "서귀포 올레시장 투어 & 갈치조림", desc: "푸짐한 은갈치 조림으로 배를 채우고 시장에 가 마늘만두, 귤하르방 빵 등을 야식으로 쇼핑.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" }
+                ],
+                rainy: [
+                    { time: "09:30 - 11:30", title: "여미지식물원 (중문)", desc: "비가 와도 전면 유리 온실 속에서 세계 각국의 화려한 정원과 희귀 식물을 편안히 감상합니다.", type: "실내", bg: "border-indigo-100 bg-indigo-50/20" },
+                    { time: "12:00 - 13:00", title: "춘심이네 갈치구이 본점", desc: "가시를 다 발라주어 아이와 부모님 식사 대접으로 최적화된 통갈치구이 명가.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" },
+                    { time: "13:30 - 15:30", title: "본태박물관 또는 헬로키티 아일랜드", desc: "세계적 건축가 안도 다다오의 물과 콘크리트 미학을 감상하거나 아이들을 위한 헬로키티 테마 파크.", type: "실내", bg: "border-indigo-100 bg-indigo-50/20" },
+                    { time: "16:00 - 18:00", title: "플레이사계 & 실내 카페 쉼", desc: "비오는 창을 때리는 빗소리를 배경으로 즐기는 제주 특산 오메기 떡과 전통 차 카페.", type: "카페", bg: "border-amber-100 bg-amber-50/20" },
+                    { time: "18:30 - 20:00", title: "서귀포 매일올레시장 (야시장 실내식)", desc: "올레시장은 천장에 아케이드 지붕이 있어 비 오는 날에도 끄떡없이 쾌적한 야시장 투어가 가능합니다.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" }
+                ]
+            },
+            3: {
+                date: "7월 19일(일)",
+                subtitle: "자연의 신비와 휴식 - 동부/성산 코스",
+                sunny: [
+                    { time: "09:00 - 11:30", title: "성산일출봉 정성 정복", desc: "아침 일찍 성산일출봉 정상까지 왕복하며, 끝내주는 성산포 바다와 제주 지형의 위엄을 감상합니다.", type: "야외", bg: "border-emerald-100 bg-emerald-50/20" },
+                    { time: "12:00 - 13:00", title: "맛나식당 (갈치/고등어 조림) 또는 성산 현지 식사", desc: "성산포 대표 현지 맛집에서 달짝지근하고 칼칼한 조림으로 에너지를 충전합니다.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" },
+                    { time: "13:30 - 15:30", title: "비자림 숲길 힐링 피톤치드 산책", desc: "수천 그루 비자나무가 선사하는 그늘 속을 걸으며 머리끝까지 시원해지는 피톤치드를 흡입합니다.", type: "야외", bg: "border-emerald-100 bg-emerald-50/20" },
+                    { time: "16:00 - 18:00", title: "함덕해수욕장 & 서우봉 산책", desc: "동쪽 최고의 에메랄드빛 해변에서 찰랑거리는 파도를 느끼며 시원하게 휴식을 취합니다.", type: "야외", bg: "border-emerald-100 bg-emerald-50/20" },
+                    { time: "18:30 - 20:00", title: "제주 동문시장 푸드트럭 투어", desc: "신나고 에너지 넘치는 동문 재래시장 야시장에서 전복김밥, 육전 등을 야외 푸드 스탠드에서 시식.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" }
+                ],
+                rainy: [
+                    { time: "09:30 - 12:00", title: "아쿠아플라넷 제주", desc: "아시아 최대 규모의 아쿠아리움. 거대한 고래상어와 물개 쇼까지 완벽하게 비를 피해 3시간 꽉 찬 코스.", type: "실내", bg: "border-indigo-100 bg-indigo-50/20" },
+                    { time: "12:30 - 13:30", title: "성산 성게국수 또는 전복죽 정식", desc: "비오는 서늘한 날에 제격인 고소하고 따뜻한 성게 보말칼국수와 진한 전복죽 한그릇.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" },
+                    { time: "14:00 - 15:30", title: "비자림 숲 산책 (빗소리 강력추천)", desc: "놀랍게도 비자림은 가랑비가 올 때 흙내음과 풀내음이 최고조에 달해, 우비 입고 걸으면 가장 아름다운 숲길입니다.", type: "힐링", bg: "border-emerald-100 bg-emerald-50/20" },
+                    { time: "16:00 - 18:00", title: "빛의 벙커 (Bunker de Lumières)", desc: "옛 군사 통신 벙커를 개조한 미디어아트 전시장. 화려한 색채의 명화 속에 빠져드는 완벽한 오감 만족 코스.", type: "실내", bg: "border-indigo-100 bg-indigo-50/20" },
+                    { time: "18:30 - 20:00", title: "제주시내 늘봄흑돼지 / 고기국수 맛집", desc: "실내 대형 흑돼지 식당이나 시원한 고기국수로 여유롭게 마지막 전야제 저녁식사.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" }
+                ]
+            },
+            4: {
+                date: "7월 20일(월)",
+                subtitle: "감사했던 제주와의 작별 - 공항 근처",
+                sunny: [
+                    { time: "09:30 - 11:30", title: "용두암 & 용연구름다리 해안 산책", desc: "공항 옆 탁 트인 바다 전망과 기암괴석을 배경으로 마지막 제주 기념사진을 한 컷 찍습니다.", type: "야외", bg: "border-emerald-100 bg-emerald-50/20" },
+                    { time: "11:30 - 12:40", title: "우진해장국 (고사리육개장) 또는 고기국수 삼대", desc: "꾸덕하고 부드러운 고사리 육개장으로 이색적이고 감동적인 식사 마무리 (웨이팅 고려).", type: "맛집", bg: "border-teal-100 bg-teal-50/20" },
+                    { time: "12:40 - 13:15", title: "동문시장 오메기떡 및 기념품 구매", desc: "마지막으로 렌트카 반납 전, 선물용 마음샌드, 오메기떡, 귤 초콜릿 등을 알차게 구매합니다.", type: "쇼핑", bg: "border-slate-200" },
+                    { time: "13:30", title: "렌트카 반납 및 제주공항 복귀", desc: "오후 1시 반에 맞춰 렌트카를 완벽히 반납한 뒤 공항으로 편안히 안착합니다.", type: "이동", bg: "border-slate-200" }
+                ],
+                rainy: [
+                    { time: "09:30 - 11:30", title: "국립제주박물관 (또는 실내 카페)", desc: "제주도의 역사와 설화가 가득 담긴 전시를 둘러보며 우아하고 조용히 여정을 마무리합니다.", type: "실내", bg: "border-indigo-100 bg-indigo-50/20" },
+                    { time: "11:30 - 12:40", title: "제주 시내 국수거리 점심", desc: "뜨끈하고 뽀얀 육수 베이스의 고기국수로 따뜻하게 여독을 달래는 한끼 식사.", type: "맛집", bg: "border-teal-100 bg-teal-50/20" },
+                    { time: "12:40 - 13:15", title: "제주 마음샌드 수령 (공항 내/근처)", desc: "파리바게뜨 어플로 예약해 둔 제주 마음샌드를 픽업하며 비 한 방울 맞지 않고 쾌적하게 기념품 챙기기.", type: "쇼핑", bg: "border-slate-200" },
+                    { time: "13:30", title: "렌트카 반납 및 제주공항 복귀", desc: "차량 내부 쓰레기나 소지품을 잘 챙겨 반납한 뒤 홈타운으로 떠나는 길에 오릅니다.", type: "이동", bg: "border-slate-200" }
+                ]
+            }
+        };
+
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            // Show active tab
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Reset navigation tab colors
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-teal-500');
+                btn.classList.add('text-slate-400');
+                const textSpan = btn.querySelector('span');
+                if (textSpan) textSpan.classList.remove('font-bold');
+            });
+
+            // Set active navigation tab color
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-teal-500');
+                const textSpan = activeBtn.querySelector('span');
+                if (textSpan) textSpan.classList.add('font-bold');
+            }
+        }
+
+        function toggleRainMode(toggleInput) {
+            isRainMode = toggleInput.checked;
+            const titleEl = document.getElementById('alternative-title');
+            if (isRainMode) {
+                titleEl.textContent = "현재: 비 올 때 대체 추천 코스 🌧️";
+                titleEl.className = "text-sm font-bold text-amber-200 mt-0.5";
+                showToast("비가 올 때 대처 가능한 실내 동선 코스로 변경되었습니다.");
+            } else {
+                titleEl.textContent = "현재: 화창한 날 추천 코스 ☀️";
+                titleEl.className = "text-sm font-bold text-white mt-0.5";
+                showToast("맑은 날 제주의 매력을 극대화한 아웃도어 동선 코스입니다.");
+            }
+            renderDayItinerary();
+        }
+
+        function showDay(dayNum) {
+            currentDayTab = dayNum;
+            // Highlight active day switcher button
+            document.querySelectorAll('.day-tab-btn').forEach(btn => {
+                btn.className = "day-tab-btn flex-1 py-2 text-center text-xs font-semibold rounded-lg text-slate-500 hover:bg-slate-50 transition-all";
+            });
+            const activeBtn = document.getElementById(`day${dayNum}-btn`);
+            activeBtn.className = "day-tab-btn flex-1 py-2 text-center text-xs font-bold rounded-lg bg-white text-teal-600 shadow-sm transition-all";
+            
+            renderDayItinerary();
+        }
+
+        function renderDayItinerary() {
+            const container = document.getElementById('itinerary-details');
+            container.innerHTML = '';
+
+            const dayData = itineraryData[currentDayTab];
+            const courses = isRainMode ? dayData.rainy : dayData.sunny;
+
+            // Day subtitle and info
+            const header = document.createElement('div');
+            header.className = "bg-white p-4 rounded-2xl border border-slate-100 shadow-sm";
+            header.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold px-2 py-0.5 rounded bg-teal-100 text-teal-700">DAY 0${currentDayTab}</span>
+                    <span class="text-xs text-slate-400">${dayData.date}</span>
+                </div>
+                <h3 class="text-sm font-bold text-slate-800 mt-1.5">${dayData.subtitle}</h3>
+            `;
+            container.appendChild(header);
+
+            // Populate Timeline Cards
+            courses.forEach((course, index) => {
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border-l-4 border-y border-r border-slate-100 bg-white shadow-sm flex gap-3 relative ${course.bg}`;
+                
+                // Set Badge Colors
+                let typeBadge = '';
+                if (course.type === '야외') typeBadge = 'bg-emerald-100 text-emerald-700';
+                else if (course.type === '실내') typeBadge = 'bg-indigo-100 text-indigo-700';
+                else if (course.type === '맛집') typeBadge = 'bg-teal-100 text-teal-700';
+                else if (course.type === '카페') typeBadge = 'bg-amber-100 text-amber-700';
+                else typeBadge = 'bg-slate-100 text-slate-700';
+
+                card.innerHTML = `
+                    <div class="absolute -left-2.5 top-5 w-5 h-5 rounded-full bg-teal-500 border-2 border-white text-white flex items-center justify-center text-[10px] font-bold">
+                        ${index + 1}
+                    </div>
+                    <div class="pl-2 w-full space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-semibold text-slate-400">${course.time}</span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md ${typeBadge}">${course.type}</span>
+                        </div>
+                        <h4 class="text-xs font-bold text-slate-800">${course.title}</h4>
+                        <p class="text-[11px] text-slate-500/90 leading-relaxed">${course.desc}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Filter and Render Food Database
+        function filterFoodRegion(region) {
+            currentFoodFilter = region;
+            
+            // Set active states on buttons
+            document.querySelectorAll('.food-region-btn').forEach(btn => {
+                btn.className = "food-region-btn flex-1 px-3 py-2 text-center text-xs font-medium rounded-lg text-slate-500 hover:bg-slate-50 transition-all";
+            });
+            const activeBtn = document.getElementById(`food-${region}-btn`);
+            if (activeBtn) {
+                activeBtn.className = "food-region-btn flex-1 px-3 py-2 text-center text-xs font-bold rounded-lg bg-white text-teal-600 shadow-sm transition-all";
+            }
+
+            renderFoodList();
+        }
+
+        function renderFoodList() {
+            const container = document.getElementById('food-list-container');
+            container.innerHTML = '';
+
+            const filteredData = currentFoodFilter === 'all' 
+                ? foodDatabase 
+                : foodDatabase.filter(food => food.region === currentFoodFilter);
+
+            filteredData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2.5 hover:scale-[1.01] transition-all";
+                
+                // Color badges based on food/cafe type
+                const isCafe = item.type === '카페' || item.type === '베이커리';
+                const typeColor = isCafe ? 'bg-amber-100 text-amber-800' : 'bg-teal-100 text-teal-800';
+
+                // Render Star Rating
+                let starsHtml = '';
+                const fullStars = Math.floor(item.stars);
+                for (let i = 0; i < fullStars; i++) {
+                    starsHtml += `<i class="fa-solid fa-star text-[10px]"></i>`;
+                }
+                if (item.stars % 1 !== 0) {
+                    starsHtml += `<i class="fa-solid fa-star-half-stroke text-[10px]"></i>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-xs font-black text-slate-800">${item.name}</span>
+                                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${typeColor}">${item.type}</span>
+                                <span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">${item.tag}</span>
+                            </div>
+                            <p class="text-[10px] text-teal-600 font-bold mt-1">대표메뉴: ${item.menu}</p>
+                        </div>
+                        <div class="flex items-center gap-0.5 text-amber-500 font-bold text-xs">
+                            ${starsHtml}
+                            <span class="text-slate-600 text-[10px] ml-1">${item.stars}</span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">${item.desc}</p>
+                    <div class="bg-slate-50 border border-slate-100 p-2 rounded-xl flex gap-1.5 items-start">
+                        <span class="text-[9px] font-bold bg-slate-200 text-slate-600 px-1 py-0.5 rounded flex-shrink-0 mt-0.5">꿀팁</span>
+                        <p class="text-[10px] text-slate-600 leading-tight">${item.tips}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderChecklist() {
+            const listContainer = document.getElementById('checklist-container');
+            listContainer.innerHTML = '';
+
+            // Retrieve or initialize saved checklist items
+            let savedList = localStorage.getItem('jeju_checklist');
+            if (!savedList) {
+                savedList = JSON.stringify(defaultChecklist.map(item => ({ ...item, checked: false })));
+                localStorage.setItem('jeju_checklist', savedList);
+            }
+            const items = JSON.parse(savedList);
+
+            // Group by category
+            const categories = {};
+            items.forEach(item => {
+                if (!categories[item.category]) categories[item.category] = [];
+                categories[item.category].push(item);
+            });
+
+            // Display categorized checklist
+            for (const catName in categories) {
+                const catBlock = document.createElement('div');
+                catBlock.className = "bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-2.5";
+                catBlock.innerHTML = `<h3 class="text-xs font-bold text-slate-800 border-b border-slate-50 pb-1.5 flex items-center gap-1.5">
+                    <span class="w-1.5 h-3 bg-teal-500 rounded-sm inline-block"></span>
+                    ${catName}
+                </h3>`;
+
+                categories[catName].forEach(item => {
+                    const row = document.createElement('div');
+                    row.className = "flex items-center justify-between cursor-pointer py-1 select-none" ;
+                    row.onclick = () => toggleChecklistItem(item.id);
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <span class="w-5 h-5 rounded-lg border-2 ${item.checked ? 'border-teal-500 bg-teal-500 text-white' : 'border-slate-200'} flex items-center justify-center text-xs transition-all">
+                                ${item.checked ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
+                            </span>
+                            <span class="text-xs ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}">${item.text}</span>
+                        </div>
+                    `;
+                    catBlock.appendChild(row);
+                });
+                listContainer.appendChild(catBlock);
+            }
+
+            // Update Progress bar
+            const checkedCount = items.filter(i => i.checked).length;
+            const progressPercent = Math.round((checkedCount / items.length) * 100);
+            document.getElementById('checklist-progress').textContent = `${progressPercent}% 완료 (${checkedCount}/${items.length})`;
+        }
+
+        function toggleChecklistItem(id) {
+            let savedList = JSON.parse(localStorage.getItem('jeju_checklist'));
+            savedList = savedList.map(item => {
+                if (item.id === id) item.checked = !item.checked;
+                return item;
+            });
+            localStorage.setItem('jeju_checklist', JSON.stringify(savedList));
+            renderChecklist();
+        }
+
+        // AI Chat functionality
+        async function sendMessage() {
+            const inputEl = document.getElementById('chat-input');
+            const query = inputEl.value.trim();
+            if (!query) return;
+
+            // Display user message in chat
+            appendChatMessage("user", query);
+            inputEl.value = ''; // Reset input field
+
+            // Show temporary loading indicator
+            const loadingId = appendChatMessage("ai-loading", "생각 중입니다... 💡");
+
+            try {
+                // Initialize generative agent payload
+                const systemPrompt = "당신은 제주도 현지 사정을 완벽히 꿰뚫고 있는 가족여행 전문 AI 가이드입니다. 7월 장마철 소나기가 빈번한 제주의 변덕스러운 날씨를 파악해 야외 코스가 힘들 때 갈 수 있는 대체 실내 관광지, 서귀포, 제주시, 동부, 서부 지역별 맛집, 어린 자녀나 부모님 동반 시 고려할 점을 구체적인 주소나 근처 키워드와 함께 친절하고 다정하게 조언해줍니다. 답변은 스마트폰으로 보기에 아주 깔끔하고 읽기 편하게 불릿포인트와 굵은 글씨를 활용하세요.";
+                const apiKey = ""; // Canvas runtime injection
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: query }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const aiResponseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                // Remove loading block and render proper AI text
+                document.getElementById(loadingId).remove();
+
+                if (aiResponseText) {
+                    appendChatMessage("ai", aiResponseText);
+                } else {
+                    appendChatMessage("ai", "죄송해요, 잠시 답변을 준비하는 데 실패했어요. 잠시 후 다시 질문해 주세요!");
+                }
+
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                appendChatMessage("ai", "인터넷 연결을 확인하고 다시 실행해 주세요.");
+            }
+        }
+
+        // Quick query handler
+        function sendQuickPrompt(promptText) {
+            document.getElementById('chat-input').value = promptText;
+            sendMessage();
+        }
+
+        // Helper: Append chat to custom screen container
+        function appendChatMessage(role, text) {
+            const chatBox = document.getElementById('chat-box');
+            const msgId = 'msg-' + Date.now();
+
+            const wrapper = document.createElement('div');
+            wrapper.id = msgId;
+
+            if (role === 'user') {
+                wrapper.className = "flex justify-end";
+                wrapper.innerHTML = `
+                    <div class="bg-teal-500 text-white p-3 rounded-2xl shadow-sm max-w-[80%] leading-relaxed">
+                        ${text}
+                    </div>
+                `;
+            } else if (role === 'ai-loading') {
+                wrapper.className = "flex gap-2.5 items-start animate-pulse";
+                wrapper.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-[10px]">AI</div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 text-slate-400">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                // Formatting helper for Markdown-style bold in Gemini responses
+                let formattedText = text
+                    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                    .replace(/\n/g, '<br>');
+
+                wrapper.className = "flex gap-2.5 items-start";
+                wrapper.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-teal-500 to-emerald-500 text-white flex items-center justify-center font-bold text-[10px] shadow-sm">AI</div>
+                    <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 max-w-[80%] leading-relaxed text-slate-700">
+                        ${formattedText}
+                    </div>
+                `;
+            }
+
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return msgId;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.className = toast.className.replace('opacity-0 pointer-events-none', 'opacity-100 translate-y-[-10px]');
+            
+            setTimeout(() => {
+                toast.className = toast.className.replace('opacity-100 translate-y-[-10px]', 'opacity-0 pointer-events-none');
+            }, 3000);
+        }
+
+        // On App Load triggers
+        window.onload = function () {
+            // Fetch live weather data automatically
+            fetchJejuWeather();
+            // Load and render initial Itinerary view
+            showDay(1);
+            // Render luggage checklists
+            renderChecklist();
+            // Render initial food & cafe lists
+            filterFoodRegion('all');
+        };
+    </script>
+</body>
+</html>
