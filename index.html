@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>제주 가족여행 가이드</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,15 +20,21 @@
         ::-webkit-scrollbar {
             display: none;
         }
+        /* 모바일 기기별 유동적인 주소창 높이에 대응하는 최신 CSS 규격 적용 */
+        .app-container {
+            height: 100vh; /* Fallback */
+            height: 100dvh; /* Dynamic Viewport Height */
+        }
+        /* 노치 및 홈바가 있는 기기 대응을 위한 스마트 패딩 */
         .safe-bottom {
-            padding-bottom: env(safe-area-inset-bottom);
+            padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 flex justify-center min-h-screen">
 
-    <!-- Mobile Container (모바일 화면 비율 및 독립 스크롤 구현을 위해 h-screen 설정) -->
-    <div class="w-full max-w-md bg-white h-screen flex flex-col shadow-2xl relative overflow-hidden">
+    <!-- Mobile Container (app-container 클래스를 통해 모바일 뷰포트 높이 100% 보장) -->
+    <div class="w-full max-w-md bg-white app-container flex flex-col shadow-2xl relative overflow-hidden">
         
         <!-- Header (상단 헤더 고정 영역) -->
         <header class="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-5 pt-5 pb-5 rounded-b-[2rem] shadow-md shrink-0 z-40">
@@ -245,8 +251,8 @@
 
         </main>
 
-        <!-- Bottom Navigation Tabs Bar (고정된 레이아웃 보장 - shrink-0 safe-bottom) -->
-        <nav class="shrink-0 bg-white border-t border-slate-100 flex justify-around py-3 safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40">
+        <!-- Bottom Navigation Tabs Bar (dvh 내부 최하단에 z-50 레벨로 무조건 상위 고정) -->
+        <nav class="shrink-0 bg-white border-t border-slate-100 flex justify-around pt-3 safe-bottom shadow-[0_-4px_25px_rgba(0,0,0,0.06)] z-50">
             <button onclick="switchTab('tab-weather')" id="nav-tab-weather" class="nav-btn flex flex-col items-center gap-1 flex-1 text-teal-500">
                 <i class="fa-solid fa-cloud-sun text-base"></i>
                 <span class="text-[9px] font-bold">홈 & 날씨</span>
