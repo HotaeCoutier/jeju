@@ -991,12 +991,29 @@
             listContainer.innerHTML = '';
 
             // Retrieve or initialize saved checklist items
-            let savedList = localStorage.getItem('jeju_checklist');
-            if (!savedList) {
-                savedList = JSON.stringify(defaultChecklist.map(item => ({ ...item, checked: false })));
-                localStorage.setItem('jeju_checklist', savedList);
+            let savedListRaw = localStorage.getItem('jeju_checklist');
+            let items = [];
+
+            if (savedListRaw) {
+                try {
+                    const parsedSaved = JSON.parse(savedListRaw);
+                    // 코드에 명시된 최신 defaultChecklist를 순회하며 기존에 브라우저에 저장되었던 체크여부(checked)와 매칭 병합합니다.
+                    items = defaultChecklist.map(defaultItem => {
+                        const savedItem = parsedSaved.find(s => s.id === defaultItem.id);
+                        return {
+                            ...defaultItem,
+                            checked: savedItem ? savedItem.checked : false
+                        };
+                    });
+                } catch (e) {
+                    items = defaultChecklist.map(item => ({ ...item, checked: false }));
+                }
+            } else {
+                items = defaultChecklist.map(item => ({ ...item, checked: false }));
             }
-            const items = JSON.parse(savedList);
+
+            // 병합 완료된 최신 리스트로 로컬 스토리지를 즉시 동기화해 줍니다.
+            localStorage.setItem('jeju_checklist', JSON.stringify(items));
 
             // Group by category
             const categories = {};
