@@ -265,6 +265,25 @@
 
             <!-- ================= TAB 4: AI ADVISOR ================= -->
             <div id="tab-ai" class="tab-content hidden space-y-4">
+                <!-- API Key Settings Panel (이 부분이 GitHub에서 동작하기 위해 필수적입니다) -->
+                <div class="bg-slate-100 p-3 rounded-2xl border border-slate-200/60 flex flex-col gap-2">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="toggleApiSettings()">
+                        <span class="text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
+                            <i class="fa-solid fa-key text-teal-600 animate-pulse"></i> API 키 설정 (스마트폰 연동용)
+                        </span>
+                        <i id="api-arrow" class="fa-solid fa-chevron-down text-[10px] text-slate-400 transition-transform duration-200"></i>
+                    </div>
+                    <div id="api-settings-content" class="hidden flex flex-col gap-2 pt-2 border-t border-slate-200/50">
+                        <p class="text-[10px] text-slate-500 leading-relaxed">
+                            GitHub Pages 등 외부 모바일 환경에서 인공지능과 대화하려면 구글 AI Studio에서 무료 발급받으신 Gemini API 키를 저장해 주셔야 합니다. 키는 본인 스마트폰에만 안전하게 보존됩니다.
+                        </p>
+                        <div class="flex gap-2">
+                            <input type="password" id="api-key-input" placeholder="AIzaSy로 시작하는 키 입력" class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-[11px] focus:outline-none focus:border-teal-500 shadow-inner">
+                            <button onclick="saveApiKey()" class="bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shadow-sm shrink-0">저장</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div>
                     <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
                         <span class="w-1.5 h-4.5 bg-teal-500 rounded-full inline-block"></span>
@@ -274,7 +293,7 @@
                 </div>
 
                 <!-- Chat Display Box -->
-                <div class="border border-slate-100 bg-slate-50 rounded-2xl p-4 min-h-[250px] max-h-[300px] overflow-y-auto space-y-3 text-xs" id="chat-box">
+                <div class="border border-slate-100 bg-slate-50 rounded-2xl p-4 min-h-[200px] max-h-[250px] overflow-y-auto space-y-3 text-xs" id="chat-box">
                     <div class="flex gap-2.5 items-start">
                         <div class="w-7 h-7 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold text-[10px]">AI</div>
                         <div class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 max-w-[80%] leading-relaxed">
@@ -453,6 +472,42 @@
             { name: "춘심이네 본점", region: "seogwipo", type: "향토/한식", menu: "통갈치구이, 통갈치조림", desc: "제주도 통갈치구이 열풍의 시발점이자 정점. 직원이 직접 숟가락으로 가시를 우아하게 전원 발라줌.", tips: "가시 발라먹기 귀찮아하시는 부모님이나 아이 동반 가족에게 이보다 더 편안한 식사는 없습니다.", reviews: 11000, rating: 4.8, tag: "압도적 만족감" },
             { name: "보롬왓", region: "seongsan", type: "카페/디저트", menu: "메밀 크림 라떼", desc: "드넓은 들판 정원에 메밀과 수국이 한껏 어우러져 장관을 연출하는 자연 정원형 카페.", tips: "어린 자녀들이 푸른 잔디밭에서 마음껏 뛰놀 수 있어 온 가족 힐링 휴식터로 완벽.", reviews: 5900, rating: 4.7, tag: "인생 숲 정원" }
         ];
+
+        // API Key 관리 로직
+        function toggleApiSettings() {
+            const content = document.getElementById('api-settings-content');
+            const arrow = document.getElementById('api-arrow');
+            const isHidden = content.classList.contains('hidden');
+
+            if (isHidden) {
+                content.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        }
+
+        function saveApiKey() {
+            const keyInput = document.getElementById('api-key-input').value.trim();
+            if (!keyInput) {
+                showToast("API 키를 올바르게 입력해 주세요.");
+                return;
+            }
+            localStorage.setItem('jeju_gemini_api_key', keyInput);
+            showToast("Gemini API 키가 안전하게 브라우저에 저장되었습니다! 🎉");
+            document.getElementById('api-key-input').value = '';
+            toggleApiSettings();
+        }
+
+        function getApiKey() {
+            const savedKey = localStorage.getItem('jeju_gemini_api_key');
+            if (savedKey) return savedKey;
+            
+            // 기본값 (Canvas 내부 주입 연동용)
+            const envKey = ""; 
+            return envKey;
+        }
 
         // Slide-Up Bottom Sheet logic for Hourly Weather (시간별 비예측 시트)
         function toggleBookingInfo() {
@@ -1080,7 +1135,13 @@
             try {
                 // Initialize generative agent payload
                 const systemPrompt = "당신은 제주도 현지 사정을 완벽히 꿰뚫고 있는 가족여행 전문 AI 가이드입니다. 7월 장마철 소나기가 빈번한 제주의 변덕스러운 날씨를 파악해 야외 코스가 힘들 때 갈 수 있는 대체 실내 관광지, 서귀포, 제주시, 동부, 서부 지역별 맛집, 어린 자녀나 부모님 동반 시 고려할 점을 구체적인 주소나 근처 키워드와 함께 친절하고 다정하게 조언해줍니다. 답변은 스마트폰으로 보기에 아주 깔끔하고 읽기 편하게 불릿포인트와 굵은 글씨를 활용하세요.";
-                const apiKey = ""; // Canvas runtime injection
+                const apiKey = getApiKey();
+                if (!apiKey) {
+                    document.getElementById(loadingId).remove();
+                    appendChatMessage("ai", "⚠️ <b>구글 Gemini API 키가 설정되지 않았습니다.</b><br>GitHub Pages 등 외부 모바일 기기에서 AI 비서를 활성화하려면, <b>본 탭 최상단의 [API 키 설정]</b>에 구글 API 키를 입력하고 [저장]해 주셔야 정상 구동됩니다. (구글 AI Studio에서 1초 만에 무료 발급 가능합니다!)");
+                    return;
+                }
+
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
                 const payload = {
@@ -1093,6 +1154,12 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+
+                if (response.status === 400 || response.status === 403) {
+                    document.getElementById(loadingId).remove();
+                    appendChatMessage("ai", "❌ <b>API 키 인증 오류가 발생했습니다.</b><br>상단의 [API 키 설정]에서 입력하신 구글 Gemini 키가 일치하는지 혹은 비활성화 상태가 아닌지 재확인해 주세요.");
+                    return;
+                }
 
                 const result = await response.json();
                 const aiResponseText = result.candidates?.[0]?.content?.parts?.[0]?.text;
